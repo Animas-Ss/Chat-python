@@ -111,17 +111,17 @@ chat-cliente-servidor/
 
 Se deberán comprobar como mínimo:
 
-* [ ] La conexión con SQLite funciona correctamente.
-* [ ] La tabla `mensajes` se crea correctamente.
-* [ ] La tabla contiene las columnas requeridas.
-* [ ] Se puede guardar un mensaje.
+* [x] La conexión con SQLite funciona correctamente.
+* [x] La tabla `mensajes` se crea correctamente.
+* [x] La tabla contiene las columnas requeridas.
+* [x] Se puede guardar un mensaje.
 * [ ] El mensaje guarda correctamente el contenido.
-* [ ] Se registra la fecha de envío.
-* [ ] Se registra la IP del cliente.
-* [ ] Los errores de conexión son controlados.
-* [ ] Los errores al guardar mensajes son controlados.
-* [ ] Los tests detectan correctamente un fallo.
-* [ ] Los tests muestran `PASSED` cuando la operación es correcta.
+* [x] Se registra la fecha de envío.
+* [x] Se registra la IP del cliente.
+* [x] Los errores de conexión son controlados.
+* [x] Los errores al guardar mensajes son controlados.
+* [x] Los tests detectan correctamente un fallo.
+* [x] Los tests muestran `PASSED` cuando la operación es correcta.
 * [ ] Los tests muestran `FAILED` cuando la operación no cumple lo esperado.
 
 ---
@@ -327,12 +327,12 @@ CREATE TABLE IF NOT EXISTS mensajes (
 
 ### Tareas
 
-* [ ] Crear el repositorio en GitHub o Bitbucket.
-* [ ] Clonar el repositorio localmente.
-* [ ] Crear la estructura inicial del proyecto.
+* [x] Crear el repositorio en GitHub o Bitbucket.
+* [x] Clonar el repositorio localmente.
+* [x] Crear la estructura inicial del proyecto.
 * [ ] Crear el archivo `README.md`.
-* [ ] Crear el archivo `PLAN_DE_TRABAJO.md`.
-* [ ] Realizar el primer commit.
+* [x] Crear el archivo `PLAN_DE_TRABAJO.md`.
+* [x] Realizar el primer commit.
 
 ---
 
@@ -344,13 +344,13 @@ Implementar SQLite para almacenar los mensajes recibidos por el servidor.
 
 ### Tareas
 
-* [ ] Crear la base de datos.
-* [ ] Crear la tabla `mensajes`.
-* [ ] Implementar la conexión con SQLite.
-* [ ] Crear una función para guardar mensajes.
-* [ ] Registrar la fecha y hora del mensaje.
-* [ ] Registrar la IP del cliente.
-* [ ] Manejar errores de acceso a la base de datos.
+* [x] Crear la base de datos.
+* [x] Crear la tabla `mensajes`.
+* [x] Implementar la conexión con SQLite.
+* [x] Crear una función para guardar mensajes.
+* [x] Registrar la fecha y hora del mensaje.
+* [x] Registrar la IP del cliente.
+* [x] Manejar errores de acceso a la base de datos.
 
 ### Resultado esperado
 
