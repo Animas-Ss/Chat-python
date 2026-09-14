@@ -33,21 +33,22 @@ def crear_tabla():
     except sqlite3.Error as e:
         print(f"Error al crear la tabla: {e}")
 
-def guardar_mensaje(content, ip_client):
+def guardar_mensaje(contenido, ip_client):
     """
     Guardar un mensaje recibido por el servidor
     """
     try:
         
-        shipping_date = datetime.now().isoformat()
+        fecha_envio = datetime.now().isoformat()
         conn = conectar_db()
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO mensajes (contenido, fecha_envio, ip_cliente)
-            VALUES (content, shipping_date, ip_client);
-        """)
+            VALUES (?, ?, ?);
+        """,(contenido, fecha_envio, ip_client))
         conn.commit()
         print("Mensaje guardado correctamente")
         conn.close()
     except sqlite3.Error as e:
         print(f"Error al guardar el mensaje: {e}")
+        raise
