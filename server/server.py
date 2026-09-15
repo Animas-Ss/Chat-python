@@ -1,3 +1,4 @@
+import sqlite3
 from datetime import datetime
 
 from server.socket_manager import (
@@ -19,13 +20,25 @@ from server.database import (
 def generar_respuesta():
     # genera la respuesta que recibira el cliente
     fecha = datetime.now().isoformat()
-    return f"Hora del servidor: {fecha}"
+    return f"Mensaje recibido: {fecha}"
+
 
 if __name__ == "__main__":
-    crear_tabla()
+    try:
+        crear_tabla()
+    except sqlite3.Error as e:
+        print(f"No se pudo iniciar el servidor por un error de base de datos: {e}")
+        exit()
+
     servidor = crear_socket()
 
-    asociar_socket(servidor)
+    try:
+        asociar_socket(servidor)
+    except OSError as e:
+        print(f"Error al iniciar el servidor: {e}")
+        servidor.close()
+        exit()
+
     escuchar_conexiones(servidor)
     print("Servidor escuchando en localhost:5000")
 
@@ -39,7 +52,11 @@ if __name__ == "__main__":
         if mensaje == "exito":
             break
 
-        guardar_mensaje(mensaje,direccion[0])
+        try:
+            guardar_mensaje(mensaje,direccion[0])
+        except sqlite3.Error as e:
+            print(f"Error en base de datos: {e}")
+            break
 
         respuesta = generar_respuesta()
         enviar_mensaje(conexion, respuesta)

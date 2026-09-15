@@ -32,6 +32,7 @@ def crear_tabla():
         conn.close()
     except sqlite3.Error as e:
         print(f"Error al crear la tabla: {e}")
+        raise
 
 def guardar_mensaje(contenido, ip_client):
     """

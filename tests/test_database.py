@@ -60,3 +60,16 @@ def test_save_message_error(monkeypatch):
     monkeypatch.setattr(database,"conectar_db",conexion_fallida)
     with pytest.raises(sqlite3.Error):
         database.guardar_mensaje("mensaje de prueba","127.0.0.1")
+
+def test_create_table_database_error(monkeypatch, tmp_path):
+    ruta_invalida = tmp_path / "carpeta_invalida"
+    ruta_invalida.mkdir()
+
+    monkeypatch.setattr(
+        database,
+        "DB_PATH",
+        ruta_invalida
+    )
+
+    with pytest.raises(sqlite3.Error):
+        database.crear_tabla()
