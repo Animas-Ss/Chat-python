@@ -1,6 +1,6 @@
 # Plan de Trabajo
 
-## TP: Implementación de un Chat Básico Cliente-Servidor con Sockets y Base de Datos
+# TP: Implementación de un Chat Básico Cliente-Servidor con Sockets y Base de Datos
 
 ## 1. Objetivo del proyecto
 
@@ -8,56 +8,55 @@ El objetivo de este trabajo práctico es desarrollar una aplicación básica de 
 
 El servidor deberá:
 
-* Escuchar conexiones en `localhost:5000`.
-* Recibir mensajes enviados por uno o varios clientes.
-* Guardar cada mensaje recibido en una base de datos SQLite.
-* Registrar información del mensaje:
+* [x] Escuchar conexiones en `localhost:5000`.
+* [x] Recibir mensajes enviados por un cliente.
+* [x] Guardar cada mensaje recibido en una base de datos SQLite.
+* [x] Registrar información del mensaje:
 
   * `id`
   * `contenido`
   * `fecha_envio`
   * `ip_cliente`
-* Enviar una confirmación al cliente luego de recibir y almacenar correctamente el mensaje.
-* Manejar posibles errores, como:
-
-  * Puerto ocupado.
-  * Problemas de conexión.
-  * Base de datos no accesible.
-  * Errores durante el envío o recepción de datos.
+* [x] Enviar una confirmación al cliente luego de recibir y almacenar correctamente el mensaje.
+* [x] Manejar errores de puerto ocupado.
+* [x] Manejar errores de acceso a la base de datos.
 
 El cliente deberá:
 
-* Conectarse al servidor.
-* Permitir enviar múltiples mensajes.
-* Finalizar la conexión cuando el usuario escriba `éxito`.
-* Mostrar la respuesta enviada por el servidor para cada mensaje.
+* [x] Conectarse al servidor.
+* [x] Permitir enviar múltiples mensajes durante la misma conexión.
+* [x] Finalizar la comunicación cuando el usuario escriba `exito` o `éxito`.
+* [x] Mostrar la respuesta enviada por el servidor para cada mensaje.
+
+> **Nota:** La implementación actual trabaja con un cliente conectado por vez. El servidor acepta una conexión y atiende los mensajes de ese cliente hasta que finaliza la comunicación.
 
 ---
 
-# 2. Tecnologías a utilizar
+# 2. Tecnologías utilizadas
 
-El proyecto será desarrollado utilizando las siguientes tecnologías:
+El proyecto utiliza:
 
 * **Python 3**
 * **Socket**
 * **SQLite3**
 * **Datetime**
+* **pytest**
 * **Git**
 * **GitHub o Bitbucket**
 
 ---
 
-# Etapa 2.1: Implementación de pruebas automatizadas
+# 2.1 Implementación de pruebas automatizadas
 
 ## Objetivo
 
-Implementar pruebas automatizadas para verificar que los componentes del proyecto funcionen correctamente antes de integrarlos con el servidor.
+Implementar pruebas automatizadas para verificar que los componentes del proyecto funcionen correctamente antes y después de integrarlos con el servidor.
 
-Se utilizará **pytest** como framework de testing.
+Se utiliza **pytest** como framework de testing.
 
 ## Dependencia
 
-Agregar al archivo `requirements.txt`:
+Archivo `requirements.txt`:
 
 ```text
 pytest==8.4.2
@@ -77,28 +76,29 @@ pytest --version
 
 ---
 
-## Estructura de pruebas
+## Estructura actual de pruebas
 
-Las pruebas estarán separadas del código de producción:
+Las pruebas se encuentran separadas del código de producción:
 
 ```text
-chat-cliente-servidor/
+chat-python/
 │
 ├── client/
-│   └── cliente.py
+│   └── client.py
 │
 ├── server/
-│   ├── servidor.py
+│   ├── __init__.py
+│   ├── server.py
 │   ├── socket_manager.py
-│   ├── database.py
-│   └── error_handler.py
+│   └── database.py
 │
 ├── database/
 │   └── mensajes.db
 │
 ├── tests/
 │   ├── __init__.py
-│   └── test_database.py
+│   ├── test_database.py
+│   └── test_integration.py
 │
 ├── README.md
 ├── PLAN_DE_TRABAJO.md
@@ -109,38 +109,90 @@ chat-cliente-servidor/
 
 ## Pruebas de la base de datos
 
-Se deberán comprobar como mínimo:
+Actualmente se comprueba:
 
 * [x] La conexión con SQLite funciona correctamente.
 * [x] La tabla `mensajes` se crea correctamente.
 * [x] La tabla contiene las columnas requeridas.
 * [x] Se puede guardar un mensaje.
-* [ ] El mensaje guarda correctamente el contenido.
+* [x] El mensaje guarda correctamente el contenido.
 * [x] Se registra la fecha de envío.
 * [x] Se registra la IP del cliente.
 * [x] Los errores de conexión son controlados.
 * [x] Los errores al guardar mensajes son controlados.
-* [x] Los tests detectan correctamente un fallo.
+* [ ] Se realizó una prueba intencional para provocar un `FAILED`.
 * [x] Los tests muestran `PASSED` cuando la operación es correcta.
-* [ ] Los tests muestran `FAILED` cuando la operación no cumple lo esperado.
+
+Actualmente existen **6 pruebas relacionadas con la base de datos**.
+
+---
+
+## Prueba de integración
+
+Además de las pruebas individuales de SQLite, se implementó una prueba de integración:
+
+```text
+tests/test_integration.py
+```
+
+La prueba verifica la comunicación entre:
+
+```text
+Cliente
+   ↓
+Socket
+   ↓
+Servidor
+   ↓
+SQLite
+   ↓
+Respuesta del servidor
+```
+
+Se comprueba que:
+
+* [x] El servidor pueda iniciarse en un puerto de prueba.
+* [x] El cliente pueda conectarse.
+* [x] El cliente pueda enviar un mensaje.
+* [x] El servidor reciba el mensaje.
+* [x] El mensaje sea almacenado en SQLite.
+* [x] Se registre la fecha.
+* [x] Se registre la IP del cliente.
+* [x] El servidor genere una respuesta.
+* [x] El cliente reciba la respuesta.
+
+Actualmente existen:
+
+```text
+6 pruebas de base de datos
+1 prueba de integración
+------------------------
+7 pruebas automatizadas
+```
+
+Resultado actual:
+
+```text
+7 passed
+```
 
 ---
 
 ## Criterio de testing
 
-Los tests no deberán determinar el resultado mediante mensajes impresos manualmente como:
+Los tests no determinan el resultado mediante mensajes impresos manualmente como:
 
 ```text
 OK - Mensaje guardado correctamente.
 ```
 
-En su lugar, se utilizarán aserciones de `pytest`:
+En su lugar, se utilizan aserciones de `pytest`:
 
 ```python
 assert resultado == esperado
 ```
 
-De esta manera, el framework será responsable de determinar si una prueba fue exitosa o falló.
+De esta manera, el framework determina automáticamente si una prueba fue exitosa o falló.
 
 ---
 
@@ -158,141 +210,146 @@ Para obtener mayor detalle:
 pytest -v
 ```
 
-Ejemplo esperado:
+Resultado actual:
 
 ```text
-tests/test_database.py::test_crear_tabla PASSED
-tests/test_database.py::test_guardar_mensaje PASSED
+7 passed
+```
+
+Para ejecutar únicamente las pruebas de base de datos:
+
+```bash
+pytest tests/test_database.py -v
+```
+
+Para ejecutar la prueba de integración:
+
+```bash
+pytest tests/test_integration.py -v
 ```
 
 ---
 
-## Objetivo de esta etapa
+# 3. Estructura actual del proyecto
 
-Antes de conectar SQLite con el servidor, se deberá comprobar automáticamente que el módulo `database.py` funciona correctamente.
-
-El flujo será:
+La estructura implementada actualmente es:
 
 ```text
-database.py
-     │
-     ▼
-pytest
-     │
-     ├── test conexión
-     ├── test tabla
-     ├── test estructura
-     └── test inserción
-             │
-             ▼
-        SQLite
-```
-
-
-# 3. Estructura propuesta del proyecto
-
-Se propone organizar el proyecto de la siguiente manera:
-
-```text
-chat-cliente-servidor/
+chat-python/
 │
 ├── client/
-│   └── cliente.py
+│   └── client.py
 │
 ├── server/
-│   ├── servidor.py
+│   ├── __init__.py
+│   ├── server.py
 │   ├── socket_manager.py
-│   ├── database.py
-│   └── error_handler.py
+│   └── database.py
 │
 ├── database/
 │   └── mensajes.db
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_database.py
+│   └── test_integration.py
 │
 ├── README.md
 ├── PLAN_DE_TRABAJO.md
 └── requirements.txt
 ```
 
+> `error_handler.py` fue contemplado inicialmente en la planificación, pero finalmente no se implementó como módulo independiente. El manejo de errores se encuentra actualmente dentro de `server.py` y `database.py`.
+
+---
+
 ## Descripción de los archivos
 
-### `cliente.py`
+### `client/client.py`
 
-Contendrá la lógica necesaria para:
+Contiene la lógica del cliente.
 
-* Crear el socket del cliente.
-* Conectarse al servidor.
-* Solicitar mensajes al usuario.
-* Enviar mensajes.
-* Recibir respuestas del servidor.
-* Finalizar la conexión cuando el usuario escriba `éxito`.
+Responsabilidades implementadas:
 
----
-
-### `servidor.py`
-
-Será el punto principal de ejecución del servidor.
-
-Su responsabilidad será:
-
-* Inicializar los componentes necesarios.
-* Configurar el servidor.
-* Iniciar la escucha de conexiones.
-* Coordinar las funciones del sistema.
+* [x] Crear el socket del cliente.
+* [x] Conectarse al servidor.
+* [x] Solicitar mensajes al usuario.
+* [x] Enviar mensajes.
+* [x] Recibir respuestas.
+* [x] Permitir múltiples mensajes.
+* [x] Finalizar con `exito` o `éxito`.
+* [x] Cerrar el socket.
 
 ---
 
-### `socket_manager.py`
+### `server/server.py`
 
-Contendrá las funciones relacionadas con los sockets.
+Es el punto principal de ejecución del servidor.
 
-Por ejemplo:
+Responsabilidades implementadas:
 
-* Inicializar el socket TCP/IP.
-* Asociar el socket a `localhost:5000`.
-* Escuchar conexiones.
-* Aceptar clientes.
-* Recibir mensajes.
+* [x] Inicializar la base de datos.
+* [x] Crear el socket.
+* [x] Asociar el socket a `localhost` y al puerto correspondiente.
+* [x] Escuchar conexiones.
+* [x] Aceptar al cliente.
+* [x] Recibir mensajes.
+* [x] Guardar mensajes en SQLite.
+* [x] Generar respuestas con timestamp.
+* [x] Enviar respuestas al cliente.
+* [x] Manejar errores de SQLite.
+* [x] Manejar errores de puerto/socket.
+
+El servidor utiliza `5000` como puerto predeterminado:
+
+```python
+def iniciar_servidor(puerto=5000):
+```
+
+Esto permite utilizar otro puerto durante las pruebas, por ejemplo:
+
+```python
+iniciar_servidor(5001)
+```
 
 ---
 
-### `database.py`
+### `server/socket_manager.py`
 
-Contendrá toda la lógica relacionada con SQLite.
+Contiene las funciones relacionadas con los sockets.
 
-Sus responsabilidades serán:
+Actualmente implementa:
 
-* Crear o conectar con la base de datos.
-* Crear la tabla de mensajes si todavía no existe.
-* Guardar mensajes recibidos.
-* Registrar:
-
-  * Contenido.
-  * Fecha y hora.
-  * Dirección IP del cliente.
+* [x] Crear socket TCP/IP.
+* [x] Asociar el socket a localhost y al puerto indicado.
+* [x] Escuchar conexiones.
+* [x] Aceptar conexiones.
+* [x] Recibir mensajes.
+* [x] Enviar mensajes.
 
 ---
 
-### `error_handler.py`
+### `server/database.py`
 
-Contendrá funciones o lógica destinada a manejar errores.
+Contiene la lógica relacionada con SQLite.
 
-Ejemplos:
+Responsabilidades:
 
-* Puerto ocupado.
-* Error al iniciar el socket.
-* Error de conexión con la base de datos.
-* Error durante la recepción de mensajes.
-* Error al enviar una respuesta al cliente.
+* [x] Crear/conectar con la base de datos.
+* [x] Crear la tabla `mensajes`.
+* [x] Guardar mensajes.
+* [x] Registrar contenido.
+* [x] Registrar fecha y hora.
+* [x] Registrar IP del cliente.
+* [x] Manejar errores de SQLite.
 
 ---
 
 # 4. Diseño de la base de datos
 
-Se utilizará SQLite como sistema de almacenamiento.
+Se utiliza SQLite como sistema de almacenamiento.
 
 ## Tabla: `mensajes`
-
-La tabla tendrá la siguiente estructura:
 
 | Campo         | Tipo    | Descripción                                  |
 | ------------- | ------- | -------------------------------------------- |
@@ -301,7 +358,7 @@ La tabla tendrá la siguiente estructura:
 | `fecha_envio` | TEXT    | Fecha y hora en la que se recibió el mensaje |
 | `ip_cliente`  | TEXT    | Dirección IP del cliente                     |
 
-## Propuesta SQL
+## SQL utilizado
 
 ```sql
 CREATE TABLE IF NOT EXISTS mensajes (
@@ -320,25 +377,25 @@ CREATE TABLE IF NOT EXISTS mensajes (
 
 ### Objetivos
 
-* Crear el repositorio del proyecto.
-* Definir la estructura de carpetas.
+* Crear el repositorio.
+* Definir la estructura.
 * Crear los archivos iniciales.
 * Configurar Git.
 
 ### Tareas
 
-* [x] Crear el repositorio en GitHub o Bitbucket.
+* [x] Crear el repositorio.
 * [x] Clonar el repositorio localmente.
-* [x] Crear la estructura inicial del proyecto.
-* [ ] Crear el archivo `README.md`.
-* [x] Crear el archivo `PLAN_DE_TRABAJO.md`.
+* [x] Crear la estructura inicial.
+* [ ] Crear/finalizar el archivo `README.md`.
+* [x] Crear `PLAN_DE_TRABAJO.md`.
 * [x] Realizar el primer commit.
 
 ---
 
 # Etapa 2: Implementación de la base de datos
 
-### Objetivos
+## Objetivos
 
 Implementar SQLite para almacenar los mensajes recibidos por el servidor.
 
@@ -348,90 +405,72 @@ Implementar SQLite para almacenar los mensajes recibidos por el servidor.
 * [x] Crear la tabla `mensajes`.
 * [x] Implementar la conexión con SQLite.
 * [x] Crear una función para guardar mensajes.
-* [x] Registrar la fecha y hora del mensaje.
+* [x] Registrar la fecha y hora.
 * [x] Registrar la IP del cliente.
 * [x] Manejar errores de acceso a la base de datos.
+* [x] Crear pruebas automatizadas para la base de datos.
 
-### Resultado esperado
+### Resultado
 
-Cada mensaje recibido por el servidor deberá quedar registrado correctamente en la base de datos.
+Cada mensaje recibido por el servidor queda registrado correctamente en SQLite.
 
 ---
 
 # Etapa 3: Implementación del servidor
 
-### Objetivos
+## Objetivos
 
 Crear el servidor TCP utilizando el módulo `socket`.
 
-### Configuración requerida
+### Configuración
 
 ```text
 Host: localhost
-Puerto: 5000
-Protocolo: TCP/IP
+Puerto predeterminado: 5000
+Protocolo: TCP
 ```
 
 ### Tareas
 
-* [ ] Crear el socket TCP/IP.
-* [ ] Configurar la dirección `localhost`.
-* [ ] Configurar el puerto `5000`.
-* [ ] Asociar el socket utilizando `bind()`.
-* [ ] Colocar el servidor en modo escucha utilizando `listen()`.
-* [ ] Aceptar conexiones mediante `accept()`.
-* [ ] Obtener la IP del cliente.
-* [ ] Recibir mensajes mediante `recv()`.
-* [ ] Decodificar los mensajes recibidos.
-* [ ] Guardar los mensajes en SQLite.
-* [ ] Generar una confirmación con timestamp.
-* [ ] Enviar la respuesta al cliente.
+* [x] Crear el socket TCP/IP.
+* [x] Configurar `localhost`.
+* [x] Configurar el puerto `5000`.
+* [x] Asociar el socket utilizando `bind()`.
+* [x] Colocar el servidor en modo escucha utilizando `listen()`.
+* [x] Aceptar conexiones mediante `accept()`.
+* [x] Obtener la IP del cliente.
+* [x] Recibir mensajes mediante `recv()`.
+* [x] Decodificar los mensajes recibidos.
+* [x] Guardar los mensajes en SQLite.
+* [x] Generar una confirmación con timestamp.
+* [x] Enviar la respuesta al cliente.
+* [x] Permitir especificar el puerto como parámetro para facilitar las pruebas.
 
-### Comentarios importantes
+### Comentarios
 
-El código deberá incluir comentarios explicando las configuraciones principales.
-
-Ejemplo:
-
-```python
-# Configuración del socket TCP/IP
-```
-
-También deberán explicarse las secciones relacionadas con:
-
-```python
-# Asociación del socket con localhost y puerto 5000
-
-# Configuración del servidor en modo escucha
-
-# Recepción de datos enviados por el cliente
-
-# Almacenamiento del mensaje en SQLite
-
-# Envío de confirmación al cliente
-```
+El código se encuentra separado en funciones y módulos para evitar concentrar toda la lógica en un único archivo.
 
 ---
 
 # Etapa 4: Implementación del cliente
 
-### Objetivos
+## Objetivos
 
 Crear un cliente capaz de enviar múltiples mensajes al servidor.
 
 ### Tareas
 
-* [ ] Crear el socket del cliente.
-* [ ] Conectarse a `localhost:5000`.
-* [ ] Solicitar un mensaje al usuario.
-* [ ] Enviar el mensaje al servidor.
-* [ ] Esperar la respuesta del servidor.
-* [ ] Mostrar la confirmación recibida.
-* [ ] Permitir enviar múltiples mensajes.
-* [ ] Finalizar cuando el usuario escriba `éxito`.
-* [ ] Cerrar correctamente el socket.
+* [x] Crear el socket del cliente.
+* [x] Conectarse a `localhost:5000`.
+* [x] Solicitar un mensaje al usuario.
+* [x] Enviar el mensaje al servidor.
+* [x] Esperar la respuesta.
+* [x] Mostrar la confirmación recibida.
+* [x] Permitir enviar múltiples mensajes.
+* [x] Finalizar cuando el usuario escriba `exito` o `éxito`.
+* [x] Cerrar correctamente el socket.
 
-### Flujo esperado
+### Flujo implementado
 
 ```text
 Usuario escribe un mensaje
@@ -456,226 +495,216 @@ Usuario puede enviar otro mensaje
 
 # Etapa 5: Manejo de errores
 
-### Objetivos
+## Objetivos
 
 Implementar un manejo básico de errores para evitar que la aplicación finalice inesperadamente.
 
-## Errores a considerar
-
 ### Puerto ocupado
 
-Puede ocurrir si:
+* [x] Detectar cuando el puerto está ocupado.
+* [x] Mostrar un mensaje de error.
+* [x] Cerrar el socket creado.
 
-* El servidor ya se encuentra ejecutándose.
-* Otro programa está utilizando el puerto `5000`.
+Ejemplo:
 
-Se deberá capturar el error y mostrar un mensaje claro.
-
----
+```text
+Error al iniciar el servidor: [WinError 10048] ...
+```
 
 ### Base de datos no accesible
 
-Puede ocurrir si:
+* [x] Detectar errores de SQLite.
+* [x] Informar el problema.
+* [x] Evitar continuar con el servidor si la base de datos no puede inicializarse.
 
-* No se puede crear el archivo.
-* No existen permisos suficientes.
-* La conexión con SQLite falla.
+### Error durante el guardado
 
-El servidor deberá informar el error sin finalizar inesperadamente.
+* [x] Capturar errores producidos al guardar mensajes.
+* [x] Informar el error.
 
----
+### Error de conexión del cliente
 
-### Error de conexión
+* [ ] Implementar manejo específico de errores de conexión dentro de `client.py`.
 
-Puede ocurrir si:
+### Error durante envío/recepción
 
-* El servidor no está ejecutándose.
-* El cliente intenta conectarse a un puerto incorrecto.
+* [ ] Implementar manejo específico de errores de `sendall()` y `recv()`.
 
-El cliente deberá informar el problema al usuario.
-
----
-
-### Error durante la comunicación
-
-Se deberán contemplar errores durante:
-
-* Envío de mensajes.
-* Recepción de mensajes.
-* Decodificación de datos.
+> Estos últimos casos no se agregaron porque no forman parte de las pruebas implementadas hasta el momento.
 
 ---
 
 # Etapa 6: Pruebas locales
 
-Las pruebas deberán realizarse utilizando dos terminales.
+Las pruebas manuales se realizaron utilizando dos terminales.
 
 ## Terminal 1: Servidor
 
-Ejecutar:
+Desde la raíz del proyecto:
 
 ```bash
-python servidor.py
+python -m server.server
 ```
 
-Resultado esperado:
+Resultado:
 
 ```text
-Servidor iniciado.
-Escuchando en localhost:5000...
+Tabla creada correctamente
+Servidor escuchando en localhost:5000
 ```
-
----
 
 ## Terminal 2: Cliente
 
-Ejecutar:
+Desde la raíz del proyecto:
 
 ```bash
-python cliente.py
+python client/client.py
 ```
 
-Resultado esperado:
+Resultado:
 
 ```text
-Conectado al servidor.
-
-Ingrese un mensaje:
+Cliente conectado al servidor
+Ingrese su mensaje:
 ```
 
 ---
 
-## Casos de prueba
+## Casos de prueba realizados
 
 ### Prueba 1: Envío de un mensaje
 
-```text
-Cliente:
-Hola servidor
-```
-
-Resultado esperado:
-
-```text
-Servidor:
-Mensaje recibido correctamente.
-```
-
-Cliente:
-
-```text
-Mensaje recibido: 2026-09-12 14:30:00
-```
+* [x] Enviar un mensaje.
+* [x] Recibirlo en el servidor.
+* [x] Guardarlo en SQLite.
+* [x] Recibir respuesta con timestamp.
 
 ---
 
-### Prueba 2: Envío de múltiples mensajes
+### Prueba 2: Múltiples mensajes
 
-Enviar varios mensajes consecutivos y verificar que:
-
-* El servidor los reciba.
-* Se almacenen correctamente.
-* El cliente reciba una respuesta por cada mensaje.
+* [x] Enviar varios mensajes consecutivos.
+* [x] Verificar que el servidor los reciba.
+* [x] Verificar que se almacenen.
+* [x] Verificar que el cliente reciba una respuesta por cada mensaje.
 
 ---
 
 ### Prueba 3: Verificación de base de datos
 
-Verificar que los mensajes se encuentren almacenados en SQLite.
-
-Ejemplo:
-
-| id | contenido       | fecha_envio         | ip_cliente |
-| -- | --------------- | ------------------- | ---------- |
-| 1  | Hola            | 2026-09-12 14:30:00 | 127.0.0.1  |
-| 2  | Segundo mensaje | 2026-09-12 14:31:00 | 127.0.0.1  |
+* [x] Verificar que los mensajes se almacenen.
+* [x] Verificar contenido.
+* [x] Verificar fecha.
+* [x] Verificar IP.
 
 ---
 
-### Prueba 4: Finalización del cliente
+### Prueba 4: Finalización
 
-Ingresar:
-
-```text
-éxito
-```
-
-Resultado esperado:
-
-```text
-Cliente finalizado correctamente.
-```
+* [x] Finalizar mediante `exito`.
+* [x] Finalizar mediante `éxito`.
+* [x] Cerrar la conexión.
 
 ---
 
 ### Prueba 5: Puerto ocupado
 
-Intentar iniciar dos servidores utilizando el puerto `5000`.
+* [x] Ejecutar un servidor en `localhost:5000`.
+* [x] Intentar iniciar un segundo servidor utilizando el mismo puerto.
+* [x] Verificar que se informe el error.
 
-Resultado esperado:
+---
+
+# 6. Pruebas automatizadas finales
+
+Actualmente se dispone de:
 
 ```text
-Error: el puerto 5000 ya se encuentra en uso.
+tests/test_database.py
+        ↓
+6 pruebas
+
+tests/test_integration.py
+        ↓
+1 prueba
+
+Total
+        ↓
+7 pruebas
+```
+
+Resultado:
+
+```text
+7 passed
+```
+
+Las pruebas fueron ejecutadas mediante:
+
+```bash
+pytest -v
+```
+
+Resultado obtenido:
+
+```text
+tests/test_database.py::test_create_table PASSED
+tests/test_database.py::test_save_message PASSED
+tests/test_database.py::test_save_message_date PASSED
+tests/test_database.py::test_database_error PASSED
+tests/test_database.py::test_save_message_error PASSED
+tests/test_database.py::test_create_table_database_error PASSED
+tests/test_integration.py::test_comunicacion_cliente_servidor PASSED
+
+7 passed
 ```
 
 ---
 
-# 6. Orden recomendado de desarrollo
+# 7. Orden de desarrollo realizado
 
-Se recomienda seguir el siguiente orden:
+El desarrollo se realizó de manera incremental:
 
 ```text
-1. Crear repositorio
+1. Crear estructura del proyecto
         ↓
-2. Crear estructura del proyecto
+2. Implementar SQLite
         ↓
-3. Implementar SQLite
+3. Crear pruebas de base de datos
         ↓
-4. Probar almacenamiento de mensajes
+4. Implementar servidor Socket
         ↓
-5. Implementar socket del servidor
+5. Integrar Socket + SQLite
         ↓
-6. Probar recepción de un mensaje
+6. Implementar cliente
         ↓
-7. Conectar socket + base de datos
+7. Implementar manejo de errores
         ↓
-8. Implementar respuesta con timestamp
+8. Permitir puerto configurable
         ↓
-9. Implementar cliente
+9. Crear prueba de integración
         ↓
-10. Permitir múltiples mensajes
+10. Verificar Socket + SQLite + respuesta
         ↓
-11. Implementar salida con "éxito"
+11. Ejecutar las 7 pruebas
         ↓
-12. Implementar manejo de errores
-        ↓
-13. Realizar pruebas finales
-        ↓
-14. Documentar el proyecto
-        ↓
-15. Subir la solución al repositorio
+12. Documentar el proyecto
 ```
 
 ---
 
-# 7. División sugerida de responsabilidades
+# 8. División sugerida de responsabilidades
 
-En caso de realizar el trabajo en grupo, se puede dividir de la siguiente manera.
+En caso de realizar el trabajo en grupo, las responsabilidades pueden dividirse de la siguiente manera.
 
-## Integrante 1: Servidor
-
-Responsabilidades:
+## Servidor
 
 * Inicialización del socket.
 * Configuración de `localhost:5000`.
 * Escucha de conexiones.
 * Recepción de mensajes.
 
----
-
-## Integrante 2: Base de datos
-
-Responsabilidades:
+## Base de datos
 
 * Configuración de SQLite.
 * Creación de la tabla.
@@ -683,91 +712,78 @@ Responsabilidades:
 * Registro de fecha e IP.
 * Manejo de errores de base de datos.
 
----
-
-## Integrante 3: Cliente
-
-Responsabilidades:
+## Cliente
 
 * Conexión con el servidor.
 * Envío de múltiples mensajes.
 * Recepción de respuestas.
-* Finalización con `éxito`.
-
----
+* Finalización con `exito` o `éxito`.
 
 ## Trabajo conjunto
 
-Responsabilidades:
-
-* Integración de los módulos.
-* Manejo general de errores.
+* Integración.
 * Pruebas.
+* Manejo de errores.
 * Documentación.
 * README.
-* Revisión final del código.
+* Revisión final.
 
 ---
 
-# 8. Buenas prácticas a aplicar
+# 9. Buenas prácticas aplicadas
 
-Durante el desarrollo se deberán aplicar las siguientes prácticas:
+Durante el desarrollo se aplicaron las siguientes prácticas:
 
-* Utilizar funciones con una única responsabilidad.
-* Evitar código duplicado.
-* Separar la lógica de sockets y base de datos.
-* Utilizar nombres descriptivos para variables y funciones.
-* Comentar las configuraciones importantes.
-* Manejar excepciones.
-* Cerrar correctamente sockets y conexiones a la base de datos.
-* Realizar pruebas después de implementar cada módulo.
-* Realizar commits frecuentes y descriptivos.
-
-Ejemplos de commits:
-
-```text
-feat: crear configuración inicial del servidor
-
-feat: agregar almacenamiento de mensajes en SQLite
-
-feat: implementar cliente con envío múltiple de mensajes
-
-fix: manejar error cuando el puerto está ocupado
-
-docs: agregar instrucciones de ejecución al README
-```
+* [x] Utilizar funciones con responsabilidades específicas.
+* [x] Separar la lógica de sockets y base de datos.
+* [x] Utilizar nombres descriptivos.
+* [x] Manejar excepciones.
+* [x] Cerrar sockets y conexiones.
+* [x] Realizar pruebas después de implementar cada módulo.
+* [x] Utilizar `pytest` para pruebas automatizadas.
+* [x] Utilizar una base de datos temporal para la prueba de integración.
+* [x] Utilizar parámetros para evitar dependencias innecesarias durante las pruebas.
+* [x] Realizar commits durante el desarrollo.
 
 ---
 
-# 9. Criterio de finalización
+# 10. Criterio de finalización
 
-El trabajo estará finalizado cuando se cumplan los siguientes requisitos:
+## Implementación
 
-* [ ] El servidor escucha correctamente en `localhost:5000`.
-* [ ] El cliente puede conectarse al servidor.
-* [ ] El cliente puede enviar múltiples mensajes.
-* [ ] El servidor recibe correctamente los mensajes.
-* [ ] Cada mensaje se guarda en SQLite.
-* [ ] Se registra la fecha y hora del mensaje.
-* [ ] Se registra la IP del cliente.
-* [ ] El servidor responde con:
+* [x] El servidor escucha correctamente en `localhost:5000`.
+* [x] El cliente puede conectarse al servidor.
+* [x] El cliente puede enviar múltiples mensajes.
+* [x] El servidor recibe correctamente los mensajes.
+* [x] Cada mensaje se guarda en SQLite.
+* [x] Se registra la fecha y hora.
+* [x] Se registra la IP del cliente.
+* [x] El servidor responde con:
 
 ```text
 Mensaje recibido: <timestamp>
 ```
 
-* [ ] El cliente muestra cada respuesta recibida.
-* [ ] El cliente finaliza al escribir `éxito`.
-* [ ] Se manejan errores básicos.
-* [ ] El código está modularizado.
-* [ ] Las configuraciones importantes están comentadas.
-* [ ] Se realizaron pruebas locales.
-* [ ] El código está subido a GitHub o Bitbucket.
-* [ ] El repositorio contiene un README con instrucciones de ejecución.
+* [x] El cliente muestra cada respuesta.
+* [x] El cliente finaliza al escribir `exito` o `éxito`.
+* [x] Se manejan errores de base de datos.
+* [x] Se maneja el puerto ocupado.
+* [x] El código está modularizado.
+* [x] Se realizaron pruebas locales.
+* [x] Se realizaron pruebas automatizadas.
+
+## Pendiente
+
+* [ ] Implementar manejo específico de errores de conexión del cliente.
+* [ ] Implementar manejo específico de errores de envío/recepción.
+* [ ] Completar y revisar el `README.md`.
+* [ ] Realizar revisión final del código.
+* [ ] Realizar commit final.
+* [ ] Subir/verificar la versión final en GitHub o Bitbucket.
 
 ---
 
-# 10. Entrega
+# 11. Entrega
 
 La entrega final consistirá en:
 
@@ -775,38 +791,53 @@ La entrega final consistirá en:
 
 O, en caso de no utilizar un repositorio:
 
-* Un archivo comprimido `.zip` o `.rar` con la solución completa.
+* Un archivo comprimido `.zip` o `.rar`.
 
-## Contenido mínimo de la entrega
+## Contenido de la entrega
 
 ```text
-chat-cliente-servidor/
+chat-python/
 │
 ├── client/
+│   └── client.py
+│
 ├── server/
+│   ├── __init__.py
+│   ├── server.py
+│   ├── socket_manager.py
+│   └── database.py
+│
 ├── database/
+│   └── mensajes.db
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_database.py
+│   └── test_integration.py
+│
 ├── README.md
 ├── PLAN_DE_TRABAJO.md
-└── código fuente completo
+└── requirements.txt
 ```
 
 ---
 
-# 11. Resultado final esperado
+# 12. Resultado final esperado
 
-El resultado será una aplicación funcional donde un cliente pueda enviar mensajes a un servidor mediante sockets.
+El resultado es una aplicación funcional donde un cliente puede enviar múltiples mensajes a un servidor mediante sockets TCP.
 
-El servidor deberá recibir cada mensaje, almacenar su información en una base de datos SQLite y responder al cliente con una confirmación que incluya la fecha y hora de recepción.
+El servidor recibe cada mensaje, almacena su información en SQLite y responde al cliente con una confirmación que incluye la fecha y hora de recepción.
 
-Este proyecto permitirá aplicar conceptos de:
+El proyecto permite aplicar conceptos de:
 
 * Programación de redes.
 * Arquitectura cliente-servidor.
 * Sockets TCP/IP.
-* Comunicación entre procesos.
+* Comunicación mediante sockets.
 * Persistencia de datos.
 * SQLite.
 * Manejo de errores.
 * Modularización.
+* Pruebas automatizadas.
 * Buenas prácticas de programación.
 * Control de versiones con Git.
