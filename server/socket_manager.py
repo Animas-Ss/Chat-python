@@ -4,9 +4,9 @@ def crear_socket():
     #Crea y devuelve un socket TCP para el servidor.
     return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-def asociar_socket(servidor):
+def asociar_socket(servidor, puerto=5000):
     #Asocia el socket a la dirección IP y puerto especificados.
-    servidor.bind(("localhost", 5000))
+    servidor.bind(("localhost", puerto))
 
 def escuchar_conexiones(servidor):
     #El servidor empieza a escuchar conexiones entrantes.

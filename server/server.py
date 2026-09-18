@@ -12,7 +12,7 @@ from server.socket_manager import (
 
 from server.database import (
     crear_tabla,
-    guardar_mensaje
+    guardar_mensaje,
 )
 
 
@@ -22,25 +22,24 @@ def generar_respuesta():
     fecha = datetime.now().isoformat()
     return f"Mensaje recibido: {fecha}"
 
-
-if __name__ == "__main__":
+def iniciar_servidor(puerto=5000):
     try:
         crear_tabla()
     except sqlite3.Error as e:
         print(f"No se pudo iniciar el servidor por un error de base de datos: {e}")
-        exit()
+        return
 
     servidor = crear_socket()
 
     try:
-        asociar_socket(servidor)
+        asociar_socket(servidor, puerto)
     except OSError as e:
         print(f"Error al iniciar el servidor: {e}")
         servidor.close()
-        exit()
+        return
 
     escuchar_conexiones(servidor)
-    print("Servidor escuchando en localhost:5000")
+    print(f"Servidor escuchando en localhost:{puerto}")
 
     conexion, direccion = aceptar_conexion(servidor)
     print(f"Cliente conectado: {direccion}")
@@ -49,11 +48,11 @@ if __name__ == "__main__":
         mensaje = recibir_mensaje(conexion)
         print(f"Mensaje recibido: {mensaje}")
      
-        if mensaje == "exito":
+        if mensaje == "exito" or mensaje == "éxito":
             break
 
         try:
-            guardar_mensaje(mensaje,direccion[0])
+            guardar_mensaje(mensaje, direccion[0])
         except sqlite3.Error as e:
             print(f"Error en base de datos: {e}")
             break
@@ -63,3 +62,7 @@ if __name__ == "__main__":
 
     conexion.close()
     servidor.close()
+
+
+if __name__ == "__main__":
+    iniciar_servidor()

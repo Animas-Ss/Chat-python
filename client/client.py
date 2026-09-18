@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     while True:
         mensaje = input("Ingrese su mensaje: ")
-        if mensaje == "exito":
+        if mensaje == "exito" or mensaje == "éxito":
             enviar_mensaje(cliente, mensaje)
             break
         
